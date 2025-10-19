@@ -18,10 +18,10 @@ ROOT_GROUND_TRUTH_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abs
 
 
 DATABASE_DEFAULT_CONFIG = {
-     "host": 'postgres',  # Host machine where the db is located
-     "user": 'postgres',  # Database user
-     "password": 'postgres',  # The password to the database user
-     "port": '5432',  # The port number for Postgres
+     "host": 'localhost',                    # Host machine where the db is located
+     "user": 'postgres',                     # Database user
+     "password": 'postgres',                 # The password to the database user
+     "port": '5432',                         # The port number for Postgres
 }
 # ================================================================================
 
