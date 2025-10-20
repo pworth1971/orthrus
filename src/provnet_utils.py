@@ -490,8 +490,26 @@ def get_node_to_path_and_type(cfg):
         
     return node_to_path_type
 
-def get_all_filelist(filepath):
+def get_all_filelist_orig(filepath):
+    print(f"filepath: {filepath}")
     files = glob.glob(f"{filepath}/*json*")
     # files = [file for file in files if file.endswith("json")]
     
     return files
+
+def get_all_filelist(filepath):
+    """Return a sorted list of basenames for JSON files under `filepath`.
+
+    - If `filepath` is a directory, list files matching *json* inside it.
+    - If `filepath` is already a glob pattern, expand it and return basenames.
+    """
+    # If user accidentally passed a glob pattern, use it directly.
+    if any(ch in filepath for ch in ['*', '?', '[']):
+        matched = glob.glob(filepath)
+    else:
+        matched = glob.glob(os.path.join(filepath, '*json*'))
+
+    # Return only the filename (basename), sorted for deterministic order
+    basenames = [os.path.basename(p) for p in matched]
+    basenames = sorted(basenames)
+    return basenames

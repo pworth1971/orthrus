@@ -21,14 +21,14 @@ echo "[*] Detected OS: $OS"
 # -----------------------------------------------------------------------------
 if [[ "$OS" == "darwin" ]]; then
     echo "[*] macOS detected — using Homebrew..."
-    # Install Homebrew if not installed
     if ! command -v brew &> /dev/null; then
         echo "[*] Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
 
     echo "[*] Installing system dependencies..."
-    brew install git wget curl graphviz postgresql@16
+    brew update
+    brew install git wget curl graphviz postgresql@17 || true
 
 else
     echo "[*] Ubuntu detected — using apt..."
@@ -48,7 +48,18 @@ git config --global user.email "$GIT_USER_EMAIL"
 # -----------------------------------------------------------------------------
 if ! command -v conda &> /dev/null; then
     echo "[*] Installing Miniconda..."
-    wget -O miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    if [[ "$OS" == "darwin" ]]; then
+        ARCH=$(uname -m)
+        if [[ "$ARCH" == "arm64" ]]; then
+            CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh"
+        else
+            CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
+        fi
+    else
+        CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+    fi
+
+    wget -O miniconda.sh "$CONDA_URL"
     bash miniconda.sh -b -p "$HOME/miniconda3"
     rm miniconda.sh
     source "$HOME/miniconda3/etc/profile.d/conda.sh"
@@ -60,17 +71,19 @@ fi
 # -----------------------------------------------------------------------------
 # Step 4: Create and activate environment
 # -----------------------------------------------------------------------------
-echo "[*] Creating conda environment '$ENV_NAME'..."
+echo "[*] Creating conda environment '$ENV_NAME' with Python $PY_VER..."
 conda create -y -n "$ENV_NAME" python="$PY_VER"
 conda activate "$ENV_NAME"
 
 # -----------------------------------------------------------------------------
-# Step 5: Install Python packages
+# Step 5: Update and install packages
 # -----------------------------------------------------------------------------
-echo "[*] Installing Python packages..."
+echo "[*] Updating all conda packages..."
 conda update -y --all
-conda install -y psycopg2 tqdm pytz scikit-learn
-pip install networkx xxhash graphviz gdown torch_geometric pytz psycopg2-binary xxhash python-louvain flask
+
+echo "[*] Installing Python packages..."
+conda install -y psycopg2 tqdm pytz scikit-learn PyYAML yacs pandas nltk gensim
+pip install networkx xxhash graphviz gdown torch_geometric python-louvain flask wandb
 
 # -----------------------------------------------------------------------------
 # Step 6: Install PyTorch
@@ -79,17 +92,28 @@ if [[ "$OS" == "darwin" ]]; then
     echo "[*] Installing PyTorch (CPU or MPS for Apple Silicon)..."
     pip install torch torchvision torchaudio
 else
-    echo "[*] Installing PyTorch CUDA 12.8..."
+    echo "[*] Installing PyTorch (CUDA 12.8)..."
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 fi
 
 # -----------------------------------------------------------------------------
-# Step 7: Setup PostgreSQL (if installed)
+# Step 7: Setup PostgreSQL
 # -----------------------------------------------------------------------------
 if command -v psql &> /dev/null; then
     echo "[*] PostgreSQL detected: $(psql --version)"
 else
-    echo "[!] PostgreSQL not detected — skipping DB setup."
+    echo "[!] PostgreSQL not detected — skipping database setup."
+fi
+
+# -----------------------------------------------------------------------------
+# Step 8: Source conda.sh at end (ensures persistence)
+# -----------------------------------------------------------------------------
+BASE_CONDA_PATH="$(conda info --base)/etc/profile.d/conda.sh"
+if [[ -f "$BASE_CONDA_PATH" ]]; then
+    echo "[*] Sourcing conda.sh to finalize setup..."
+    source "$BASE_CONDA_PATH"
+else
+    echo "[!] Could not find conda.sh — verify Conda installation path."
 fi
 
 # -----------------------------------------------------------------------------
@@ -107,7 +131,7 @@ Location:   $(which python)
 ------------------------------------------------------------
 
 To activate your environment:
-  source "$(conda info --base)/etc/profile.d/conda.sh"
+  source "$BASE_CONDA_PATH"
   conda activate $ENV_NAME
 ------------------------------------------------------------
 EOF

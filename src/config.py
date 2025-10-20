@@ -20,7 +20,7 @@ ROOT_GROUND_TRUTH_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abs
 DATABASE_DEFAULT_CONFIG = {
      "host": 'localhost',                    # Host machine where the db is located
      "user": 'postgres',                     # Database user
-     "password": 'postgres',                 # The password to the database user
+     "password": 'Rafter9876!@',             # The password to the database user
      "port": '5432',                         # The port number for Postgres
 }
 # ================================================================================
@@ -200,7 +200,7 @@ DATASET_DEFAULT_CONFIG = {
           ]
      },
      "CADETS_E3": {
-          "raw_dir": "/data/",  # NOTE: /path/to/json/files/
+          "raw_dir": "data/cadets_e3/",  # NOTE: /path/to/json/files/
           "database": "cadets_e3",
           "database_all_file": "cadets_e3",
           "num_node_types": 3,

@@ -139,8 +139,11 @@ From PIDSMaker GitHub repo: https://drive.google.com/drive/folders/1hqfz8__zVqb3
 	- postgres/initialize_databases.sh
 	- postgres/load_dumps.sh
 
-2. Graph Construction:
+1. Parse JSON Files for db load
+	cd /orthrus
+	PYTHONPATH=src python src/create_database.py CADETS_E3
 
+2. Graph Construction:
 	cd /orthrus 
 	PYTHONPATH=src python src/graph_construction/build_orthrus_graphs.py CADETS_E3
 

@@ -1,20 +1,48 @@
 #!/bin/bash
-set -e  # Exit on any error
+set -euo pipefail
 
-echo "Starting database and table creation..."
+USER="postgres"
+HOST="localhost"
+PORT="5432"
+PASSWORD="Rafter9876!@"
 
-# Loop over datasets
-for dataset in clearscope_e3 cadets_e3 theia_e3 clearscope_e5 cadets_e5 theia_e5
-do
-    # Convert dataset name to lowercase
-    DATASET_NAME=$(echo "$dataset" | tr '[:upper:]' '[:lower:]')
-    echo "Creating database and tables for: $DATASET_NAME"
+# List of datasets (databases)
+DATASETS=("clearscope_e3" "cadets_e3" "theia_e3" "clearscope_e5" "cadets_e5" "theia_e5")
 
-    # PostgreSQL commands
-    psql -U postgres <<EOF
-CREATE DATABASE $DATASET_NAME;
-\c $DATASET_NAME;
+echo "==============================================="
+echo "🚨 WARNING: This will drop ALL user databases! "
+echo "==============================================="
 
+# -----------------------------------------------------------------------------
+# Step 1. Drop all existing user databases except system ones
+# -----------------------------------------------------------------------------
+echo "[*] Dropping all existing user databases..."
+PGPASSWORD="$PASSWORD" psql -U "$USER" -h "$HOST" -p "$PORT" -d postgres -Atc \
+"SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres');" | while read -r db; do
+  if [[ -n "$db" ]]; then
+    echo "   → Dropping database: $db"
+    PGPASSWORD="$PASSWORD" psql -U "$USER" -h "$HOST" -p "$PORT" -d postgres -c "DROP DATABASE IF EXISTS \"$db\" WITH (FORCE);"
+  fi
+done
+
+echo "✅ All user databases dropped."
+
+# -----------------------------------------------------------------------------
+# Step 2. Recreate all databases and tables
+# -----------------------------------------------------------------------------
+echo "[*] Creating databases and tables..."
+
+for dataset in "${DATASETS[@]}"; do
+  DB_NAME=$(echo "$dataset" | tr '[:upper:]' '[:lower:]')
+  echo "-----------------------------------------------"
+  echo "⚙️  Creating database and tables for: $DB_NAME"
+  echo "-----------------------------------------------"
+
+  # Create database
+  PGPASSWORD="$PASSWORD" psql -U "$USER" -h "$HOST" -p "$PORT" -d postgres -c "CREATE DATABASE \"$DB_NAME\" OWNER $USER;"
+
+  # Create tables
+  PGPASSWORD="$PASSWORD" psql -U "$USER" -h "$HOST" -p "$PORT" -d "$DB_NAME" -v ON_ERROR_STOP=1 <<'EOF'
 CREATE TABLE event_table (
     src_node VARCHAR,
     src_index_id VARCHAR,
@@ -61,7 +89,9 @@ CREATE TABLE subject_node_table (
 ALTER TABLE subject_node_table OWNER TO postgres;
 EOF
 
-    echo "Database '$DATASET_NAME' and tables created successfully!"
+  echo "✅ Database '$DB_NAME' and tables created successfully!"
 done
 
-echo "All databases and tables created successfully!"
+echo "==============================================="
+echo "🎉 All databases and tables recreated successfully!"
+echo "==============================================="

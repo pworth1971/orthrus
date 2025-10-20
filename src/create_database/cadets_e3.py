@@ -245,7 +245,10 @@ def store_event(file_path, cur, connect, reverse, nodeid2msg, subject_uuid2hash,
 
 def main(cfg):
     raw_dir = cfg.dataset.raw_dir
+    print(f"raw_dir: {raw_dir}")
+
     filelist = get_all_filelist(raw_dir)
+    print(f"filelist: {filelist}")
 
     cur, connect = init_database_connection(cfg)
 
