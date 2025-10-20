@@ -50,7 +50,7 @@ def worker_func(task_list, worker_num):
         tw, graph_dir, poi, node_to_score, used_method, score_method  = task[0], task[1], task[2], task[3], task[4], task[5]
 
         # load graph
-        graph = torch.load(graph_dir)
+        graph = torch.load(graph_dir, weights_only=False)
 
         start_time = time.time()
         # init depimpact
@@ -164,7 +164,7 @@ def main(evaluation_results,
     all_traced_nodes = set()
 
     for tw, info in tw_to_info.items():
-        origin_graph = torch.load(info["graph_dir"])
+        origin_graph = torch.load(info["graph_dir"], weights_only=False)
         subgraph = origin_graph.subgraph(info["subgraph_nodes"]).copy()
 
         all_traced_nodes |= set(subgraph.nodes())

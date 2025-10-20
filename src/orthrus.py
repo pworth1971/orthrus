@@ -37,9 +37,13 @@ def main(cfg, args, **kwargs):
         np.random.seed(seed)
 
         torch.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+        elif torch.backends.mps.is_available():
+            # MPS doesn't need separate seeding, torch.manual_seed handles it
+            pass
 
     t0 = time.time()
 
@@ -57,7 +61,11 @@ def main(cfg, args, **kwargs):
 
     # Detection
     orthrus_gnn_training.main(cfg)
-    torch.cuda.empty_cache()
+    # Clear GPU cache after training
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    elif torch.backends.mps.is_available():
+        torch.mps.empty_cache()
     t4 = time.time()
     orthrus_gnn_testing.main(cfg)
     t5 = time.time()

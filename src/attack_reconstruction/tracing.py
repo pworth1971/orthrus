@@ -62,7 +62,7 @@ def transfer_results_of_node_evaluation(results_without_tw, tw_to_timestr, cfg):
     for tw, timestr in tw_to_timestr.items():
         day = timestr[8:10].lstrip('0')
         graph_dir = os.path.join(base_dir, f"graph_{day}/{timestr}")
-        graph = torch.load(graph_dir)
+        graph = torch.load(graph_dir, weights_only=False)
 
         for node_id in graph.nodes():
             node_id = int(node_id)
@@ -83,7 +83,7 @@ def main(cfg):
     for model_epoch_dir in listdir_sorted(test_losses_dir):
 
         stats_file = os.path.join(in_dir, f"stats_{model_epoch_dir}.pth")
-        stats = torch.load(stats_file)
+        stats = torch.load(stats_file, weights_only=False)
         if stats["mcc"] > best_mcc:
             best_mcc = stats["mcc"]
             best_stats = stats
@@ -98,9 +98,9 @@ def main(cfg):
 
     results_file = os.path.join(in_dir, f"result_{best_model_epoch}.pth")
     if method == "node_tw_evaluation":
-        results = torch.load(results_file)
+        results = torch.load(results_file, weights_only=False)
     elif method == "node_evaluation":
-        results_without_tw = torch.load(results_file)
+        results_without_tw = torch.load(results_file, weights_only=False)
         results = transfer_results_of_node_evaluation(results_without_tw, tw_to_time, cfg)
 
     if cfg.attack_reconstruction.tracing.used_method == 'depimpact':

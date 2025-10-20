@@ -104,7 +104,11 @@ def main(cfg):
 
     for trained_model in all_trained_models:
         log(f"Evaluation with model {trained_model}...")
-        torch.cuda.empty_cache()
+        # Clear GPU cache for CUDA devices
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+        elif device.type == "mps":
+            torch.mps.empty_cache()
         model = build_model(data_sample=test_data[0], device=device, cfg=cfg, max_node_num=max_node_num)
         model = load_model(model, os.path.join(gnn_models_dir, trained_model))
         

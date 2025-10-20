@@ -42,7 +42,7 @@ def load_data_set(cfg, path: str, split: str) -> list[TemporalData]:
     data_list = []
     for f in sorted(os.listdir(os.path.join(path, split))):
         filepath = os.path.join(path, split, f)
-        data = torch.load(filepath).to("cpu")
+        data = torch.load(filepath, weights_only=False).to("cpu")
         data_list.append(data)
 
     if cfg.edge_featurization.embed_nodes.used_method.strip() == "only_type":
@@ -259,9 +259,9 @@ def load_model(model, path: str, neigh_loader: bool=True):
     Loads weights and tensors from disk into a model.
     """
     model.load_state_dict(
-        torch.load(os.path.join(path, "state_dict.pkl")))
+        torch.load(os.path.join(path, "state_dict.pkl"), weights_only=False))
     
     if neigh_loader and isinstance(model.encoder, OrthrusEncoder):
-        model.encoder.neighbor_loader = torch.load(os.path.join(path, "neighbor_loader.pkl"))
+        model.encoder.neighbor_loader = torch.load(os.path.join(path, "neighbor_loader.pkl"), weights_only=False)
 
     return model

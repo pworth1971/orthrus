@@ -38,7 +38,7 @@ def main(cfg):
     device = get_device(cfg)
     
     # Reset the peak memory usage counter
-    if device == torch.device("cuda"):
+    if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device=device)
 
     train_data, _, _, full_data, max_node_num = load_all_datasets(cfg)
@@ -75,15 +75,29 @@ def main(cfg):
         
         epoch_times.append(timer() - start)
         
-        # Log peak CUDA memory usage
-        peak_memory = torch.cuda.max_memory_allocated(device=device) / (1024 ** 3)  # Convert to GB
-        log(f'Peak CUDA memory usage Epoch {epoch}: {peak_memory:.2f} GB')
+        # Log peak memory usage (CUDA or MPS)
+        if device.type == "cuda":
+            peak_memory = torch.cuda.max_memory_allocated(device=device) / (1024 ** 3)  # Convert to GB
+            log(f'Peak CUDA memory usage Epoch {epoch}: {peak_memory:.2f} GB')
+            memory_key = "peak_cuda_memory_GB"
+        elif device.type == "mps":
+            # MPS doesn't have direct memory tracking, but we can get current allocated
+            peak_memory = torch.mps.current_allocated_memory() / (1024 ** 3)  # Convert to GB
+            log(f'Current MPS memory usage Epoch {epoch}: {peak_memory:.2f} GB')
+            memory_key = "peak_mps_memory_GB"
+        else:
+            peak_memory = 0.0
+            log(f'CPU training - no GPU memory tracking')
+            memory_key = "cpu_training"
         
-        wandb.log({
+        wandb_log = {
             "train_epoch": epoch,
             "train_loss": round(tot_loss, 4),
-            "peak_cuda_memory_GB": round(peak_memory, 2),
-        })
+        }
+        if peak_memory > 0:
+            wandb_log[memory_key] = round(peak_memory, 2)
+        
+        wandb.log(wandb_log)
 
         # Check points
         if cfg._test_mode or epoch % 1 == 0:

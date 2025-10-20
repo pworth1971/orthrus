@@ -298,7 +298,7 @@ def compute_tw_labels(cfg):
         num_found_event_labels = 0
         tw_to_malicious_nodes = defaultdict(list)
         for i, tw in enumerate(test_graphs):
-            graph = torch.load(tw)
+            graph = torch.load(tw, weights_only=False)
             start, end  = get_start_end_from_graph(graph)
 
             # start = tw.t.min().item()
@@ -319,7 +319,7 @@ def compute_tw_labels(cfg):
     # uuid_to_node_id = get_ground_truth_uuid_to_node_id(cfg)
     
     # Create a mapping TW number => malicious node IDs
-    tw_to_malicious_nodes = torch.load(out_file)
+    tw_to_malicious_nodes = torch.load(out_file, weights_only=False)
     for tw, nodes in tw_to_malicious_nodes.items():
         unique_nodes, counts = np.unique(nodes, return_counts=True)
         node_to_count = {node: count for node, count in zip(unique_nodes, counts)}
@@ -388,7 +388,7 @@ def compute_tw_labels_for_magic(cfg):
     # uuid_to_node_id = get_ground_truth_uuid_to_node_id(cfg)
 
     # Create a mapping TW number => malicious node IDs
-    tw_to_malicious_nodes = torch.load(out_file)
+    tw_to_malicious_nodes = torch.load(out_file, weights_only=False)
     for tw, nodes in tw_to_malicious_nodes.items():
         unique_nodes, counts = np.unique(nodes, return_counts=True)
         node_to_count = {node: count for node, count in zip(unique_nodes, counts)}

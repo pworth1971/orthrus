@@ -71,7 +71,8 @@ def gen_vectorized_graphs(indexid2vec, etype2oh, ntype2oh, split_files, out_dir,
         # log(f"Computing edge embeddings: {path}")
         file = path.split("/")[-1]
 
-        graph = torch.load(path)
+        # Load graph with weights_only=False to allow NetworkX objects
+        graph = torch.load(path, weights_only=False)
 
         sorted_edges = graph.edges(data=True, keys=True)
 

@@ -440,9 +440,18 @@ def get_device(cfg):
     if cfg._use_cpu:
         return torch.device("cpu")
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if device == torch.device("cpu"):
-        log("Warning: the device is CPU instead of CUDA")
+    # Check for CUDA first
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        log("Using CUDA device")
+    # Check for Apple Silicon MPS
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+        log("Using Apple Silicon MPS device")
+    else:
+        device = torch.device("cpu")
+        log("Warning: Using CPU - no GPU acceleration available")
+    
     return device
 
 def get_node_to_path_and_type(cfg):
@@ -477,7 +486,7 @@ def get_node_to_path_and_type(cfg):
         connect.close()
         
     else:
-        node_to_path_type = torch.load(out_file)
+        node_to_path_type = torch.load(out_file, weights_only=False)
         
     return node_to_path_type
 
