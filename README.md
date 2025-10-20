@@ -131,24 +131,28 @@ python src/orthrus.py THEIA_E3 --wandb
 
 ## Run components without container
 
-Load the databases from dump files
+0. download test postgresql dump files
+
+From PIDSMaker GitHub repo: https://drive.google.com/drive/folders/1hqfz8__zVqb3QzBuOI2SxrW4lLIdYqFr
+
+1. Load the test databases directly from dump files
 	- postgres/initialize_databases.sh
 	- postgres/load_dumps.sh
 
-1. Graph Construction:
+2. Graph Construction:
 
 	cd /orthrus 
 	PYTHONPATH=src python src/graph_construction/build_orthrus_graphs.py CADETS_E3
 
-2. Node Embedding
+3. Node Embedding
 	cd /orthrus/
 	PYTHONPATH=src python src/edge_featurization/build_feature_word2vec.py CADETS_E3
 
-3. Edge Featurization:
+4. Edge Featurization:
 	cd /orthurs/
 	PYTHONPATH=src python src/edge_featurization/embed_edges_feature_word2vec.py CADETS_E3
 
-4. GNN Training
+5. GNN Training
 	cd /orthrus/
 	PYTHONPATH=src python src/detection/orthrus_gnn_training.py CADETS_E3
 
