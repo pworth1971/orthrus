@@ -37,6 +37,9 @@ def main(cfg):
     os.makedirs(gnn_models_dir, exist_ok=True)
     device = get_device(cfg)
     
+    # initialize logging
+    wandb.init(project="orthrus-gnn", name="CADETS_E3-run")
+
     # Reset the peak memory usage counter
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device=device)
@@ -103,7 +106,7 @@ def main(cfg):
         if cfg._test_mode or epoch % 1 == 0:
             model_path = os.path.join(gnn_models_dir, f"model_epoch_{epoch}")
             save_model(model, model_path)
-            
+
     wandb.log({
         "train_epoch_time": round(np.mean(epoch_times), 2),
     })
