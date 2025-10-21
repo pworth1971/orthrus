@@ -170,3 +170,4 @@ artifacts/
 *.dump
 data/
 *.tar
+artifacts_backup.tar.gz
