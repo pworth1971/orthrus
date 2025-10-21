@@ -129,19 +129,18 @@ python src/orthrus.py THEIA_E3 --wandb
 ```
 
 
-## Run components without container
+## Run Orthrus Independent Modules without container
 
 0. download test postgresql dump files
-
-From PIDSMaker GitHub repo: https://drive.google.com/drive/folders/1hqfz8__zVqb3QzBuOI2SxrW4lLIdYqFr
+	From PIDSMaker GitHub repo: https://drive.google.com/drive/folders/1hqfz8__zVqb3QzBuOI2SxrW4lLIdYqFr
 
 1. Load the test databases directly from dump files
 	- postgres/initialize_databases.sh
 	- postgres/load_dumps.sh
 
-1. Parse JSON Files for db load
-	cd /orthrus
-	PYTHONPATH=src python src/create_database.py CADETS_E3
+	1.1 (Optional if 1.0 doesnt work) Parse JSON Files for db load
+		cd /orthrus
+		PYTHONPATH=src python src/create_database.py CADETS_E3
 
 2. Graph Construction:
 	cd /orthrus 
@@ -157,8 +156,31 @@ From PIDSMaker GitHub repo: https://drive.google.com/drive/folders/1hqfz8__zVqb3
 
 5. GNN Training
 	cd /orthrus/
+	export WANDB_MODE=disabled   	# disable Weights & Biases logging if not using WANDB
 	PYTHONPATH=src python ./src/detection/orthrus_gnn_training.py CADETS_E3
 
+6. GNN Model Testing & Evaluation
+	cd /orthrus
+	PYTHONPATH=src python ./src/detection/orthrus_gnn_testing.py CADETS_E3
+
+7. Attack Reconstruction & Visualization
+	cd /orthrus
+	PYTHONPATH=src python ./src/visualization/reconstruct_attack_graph.py CADETS_E3
+
+8. Optional: Interactive Graph Inspection
+	cd /orthrus
+	PYTHONPATH=src python ./src/visualization/interactive_graph_viewer.py CADETS_E3
+
+10. DONE: Final Artifacts
+
+| Stage                 | Output Directory                        | Key Artifacts                     |
+| --------------------- | --------------------------------------- | --------------------------------- |
+| Graph construction    | `data/CADETS_E3/graphs/`                | Graph pickle / JSON               |
+| Node embeddings       | `data/CADETS_E3/embeddings/nodes/`      | `node_vectors.kv`                 |
+| Edge embeddings       | `data/CADETS_E3/embeddings/edges/`      | `edge_features.npy`               |
+| GNN training          | `data/CADETS_E3/training/`              | `orthrus_gnn_model.pt`            |
+| Evaluation            | `data/CADETS_E3/evaluation/`            | `metrics.json`, `predictions.csv` |
+| Attack reconstruction | `data/CADETS_E3/attack_reconstruction/` | `attack_graph.png`, `.dot`        |
 
 
 
