@@ -4,3 +4,5 @@ pandas
 nltk
 gensim
 wandb
+matplotlib
+igraph

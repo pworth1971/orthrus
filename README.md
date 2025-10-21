@@ -129,6 +129,7 @@ python src/orthrus.py THEIA_E3 --wandb
 ```
 
 
+
 ## Run Orthrus Independent Modules without container
 
 0. download test postgresql dump files
@@ -151,7 +152,7 @@ python src/orthrus.py THEIA_E3 --wandb
 	PYTHONPATH=src python ./src/edge_featurization/build_feature_word2vec.py CADETS_E3
 
 4. Edge Featurization:
-	cd /orthurs/
+	cd /orthrus/
 	PYTHONPATH=src python ./src/edge_featurization/embed_edges_feature_word2vec.py CADETS_E3
 
 5. GNN Training
@@ -162,16 +163,13 @@ python src/orthrus.py THEIA_E3 --wandb
 6. GNN Model Testing & Evaluation
 	cd /orthrus
 	PYTHONPATH=src python ./src/detection/orthrus_gnn_testing.py CADETS_E3
+	PYTHONPATH=src python -m detection.evaluation CADETS_E3
 
-7. Attack Reconstruction & Visualization
+7. Attack Reconstruction & Tracing
 	cd /orthrus
-	PYTHONPATH=src python ./src/visualization/reconstruct_attack_graph.py CADETS_E3
+	PYTHONPATH=src python -m attack_reconstruction.tracing CADETS_E3
 
-8. Optional: Interactive Graph Inspection
-	cd /orthrus
-	PYTHONPATH=src python ./src/visualization/interactive_graph_viewer.py CADETS_E3
-
-10. DONE: Final Artifacts
+8. DONE: Final Artifacts
 
 | Stage                 | Output Directory                        | Key Artifacts                     |
 | --------------------- | --------------------------------------- | --------------------------------- |
@@ -181,6 +179,7 @@ python src/orthrus.py THEIA_E3 --wandb
 | GNN training          | `data/CADETS_E3/training/`              | `orthrus_gnn_model.pt`            |
 | Evaluation            | `data/CADETS_E3/evaluation/`            | `metrics.json`, `predictions.csv` |
 | Attack reconstruction | `data/CADETS_E3/attack_reconstruction/` | `attack_graph.png`, `.dot`        |
+
 
 
 

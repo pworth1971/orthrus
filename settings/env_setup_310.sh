@@ -83,7 +83,7 @@ conda update -y --all
 
 echo "[*] Installing Python packages..."
 conda install -y psycopg2 tqdm pytz scikit-learn PyYAML yacs pandas nltk gensim
-pip install networkx xxhash graphviz gdown torch_geometric python-louvain flask wandb
+pip install networkx xxhash graphviz gdown torch_geometric python-louvain flask wandb matplotlib igraph
 
 # -----------------------------------------------------------------------------
 # Step 6: Install PyTorch
