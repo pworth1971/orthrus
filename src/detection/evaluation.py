@@ -16,6 +16,9 @@ def standard_evaluation(cfg, evaluation_fn):
     
     tw_to_malicious_nodes = compute_tw_labels(cfg)
     
+    # initialize logging
+    wandb.init(project="orthrus-gnn", name="CADETS_E3-eval")
+    
     best_mcc, best_stats = -1e6, {}
     for model_epoch_dir in listdir_sorted(test_losses_dir):
         log(f"\nEvaluation of model {model_epoch_dir}...")

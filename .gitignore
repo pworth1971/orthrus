@@ -169,3 +169,4 @@ nohup.out
 artifacts/
 *.dump
 data/
+*.tar

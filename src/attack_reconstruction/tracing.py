@@ -78,6 +78,9 @@ def main(cfg):
     in_dir = cfg.detection.evaluation.node_evaluation._precision_recall_dir
     test_losses_dir = os.path.join(cfg.detection.gnn_testing._edge_losses_dir, "test")
 
+    # initialize logging
+    wandb.init(project="orthrus-gnn", name="CADETS_E3-trace")
+
     best_mcc, best_stats = -1e6, {}
     best_model_epoch = listdir_sorted(test_losses_dir)[-1]
     for model_epoch_dir in listdir_sorted(test_losses_dir):
