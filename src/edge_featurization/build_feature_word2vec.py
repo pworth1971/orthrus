@@ -7,6 +7,11 @@ import numpy as np
 import random
 import torch
 
+
+import nltk
+nltk.download('punkt_tab')
+
+
 def load_corpus_from_database(indexid2msg, use_node_types):
 
     corpus = {}

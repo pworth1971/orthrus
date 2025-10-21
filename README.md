@@ -145,19 +145,19 @@ From PIDSMaker GitHub repo: https://drive.google.com/drive/folders/1hqfz8__zVqb3
 
 2. Graph Construction:
 	cd /orthrus 
-	PYTHONPATH=src python src/graph_construction/build_orthrus_graphs.py CADETS_E3
+	PYTHONPATH=src python ./src/graph_construction/build_orthrus_graphs.py CADETS_E3
 
 3. Node Embedding
 	cd /orthrus/
-	PYTHONPATH=src python src/edge_featurization/build_feature_word2vec.py CADETS_E3
+	PYTHONPATH=src python ./src/edge_featurization/build_feature_word2vec.py CADETS_E3
 
 4. Edge Featurization:
 	cd /orthurs/
-	PYTHONPATH=src python src/edge_featurization/embed_edges_feature_word2vec.py CADETS_E3
+	PYTHONPATH=src python ./src/edge_featurization/embed_edges_feature_word2vec.py CADETS_E3
 
 5. GNN Training
 	cd /orthrus/
-	PYTHONPATH=src python src/detection/orthrus_gnn_training.py CADETS_E3
+	PYTHONPATH=src python ./src/detection/orthrus_gnn_training.py CADETS_E3
 
 
 
