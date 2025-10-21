@@ -79,4 +79,4 @@ attack_reconstruction :
       used_method: component
       score_method: degree
       workers: 8
-      visualize: False
+      visualize: True
